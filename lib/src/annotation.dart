@@ -155,6 +155,7 @@ class Annotation {
     this.visible = true,
     this.zIndex = -1,
     this.onDragEnd,
+    this.clusteringIdentifier,
   }) : assert(0.0 <= alpha && alpha <= 1.0);
 
   /// Uniquely identifies a [Annotation].
@@ -194,6 +195,10 @@ class Annotation {
 
   final ValueChanged<LatLng>? onDragEnd;
 
+  /// An identifier that determines whether the annotation view participates in clustering.
+  /// See: https://developer.apple.com/documentation/mapkit/mkannotationview/2867297-clusteringidentifier
+  final String? clusteringIdentifier;
+
   /// The z-index of the annotation, used to determine relative drawing order of
   /// map overlays.
   ///
@@ -215,6 +220,7 @@ class Annotation {
     double? zIndexParam,
     VoidCallback? onTapParam,
     ValueChanged<LatLng>? onDragEndParam,
+    String? clusteringIdentifierParam,
   }) {
     return Annotation(
       annotationId: annotationId,
@@ -228,6 +234,7 @@ class Annotation {
       visible: visibleParam ?? visible,
       zIndex: zIndexParam ?? zIndex,
       onDragEnd: onDragEndParam ?? onDragEnd,
+      clusteringIdentifier: clusteringIdentifierParam ?? clusteringIdentifier,
     );
   }
 
@@ -249,6 +256,7 @@ class Annotation {
     addIfPresent('visible', visible);
     addIfPresent('position', position._toJson());
     addIfPresent('zIndex', zIndex);
+    addIfPresent('clusteringIdentifier', clusteringIdentifier);
     return json;
   }
 
@@ -265,7 +273,8 @@ class Annotation {
         infoWindow == typedOther.infoWindow &&
         position == typedOther.position &&
         visible == typedOther.visible &&
-        zIndex == typedOther.zIndex;
+        zIndex == typedOther.zIndex &&
+        clusteringIdentifier == typedOther.clusteringIdentifier;
   }
 
   @override
@@ -275,7 +284,7 @@ class Annotation {
   String toString() {
     return 'Annotation{annotationId: $annotationId, alpha: $alpha, draggable: $draggable, '
         'icon: $icon, infoWindow: $infoWindow, position: $position ,visible: $visible, '
-        'onTap: $onTap}, zIndex: $zIndex, onTap: $onTap}';
+        'onTap: $onTap}, zIndex: $zIndex, onTap: $onTap, clusteringIdentifier: $clusteringIdentifier}';
   }
 }
 

@@ -75,6 +75,7 @@ extension AppleMapController: AnnotationDelegate {
         annotationView!.canShowCallout = true
         annotationView!.alpha = CGFloat(annotation.alpha ?? 1.00)
         annotationView!.isDraggable = annotation.isDraggable ?? false
+        annotationView!.clusteringIdentifier = annotation.clusteringIdentifier
 
         return annotationView!
     }

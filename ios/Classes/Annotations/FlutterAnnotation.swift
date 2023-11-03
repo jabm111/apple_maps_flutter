@@ -24,6 +24,7 @@ class FlutterAnnotation: NSObject, MKAnnotation {
     var calloutOffset: Offset = Offset()
     var icon: AnnotationIcon = AnnotationIcon.init()
     var selectedProgrammatically: Bool = false
+    var clusteringIdentifier: String?
     
     public init(fromDictionary annotationData: Dictionary<String, Any>, registrar: FlutterPluginRegistrar) {
         let position: Array<Double> = annotationData["position"] as! Array<Double>
@@ -56,6 +57,8 @@ class FlutterAnnotation: NSObject, MKAnnotation {
         if let calloutOffsetJSON = infoWindow["anchor"] as? Array<Double> {
             self.calloutOffset = Offset(from: calloutOffsetJSON)
         }
+
+        self.clusteringIdentifier = annotationData["clusteringIdentifier"] as? String
     }
     
     
