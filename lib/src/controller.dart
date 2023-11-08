@@ -34,6 +34,53 @@ class AppleMapController {
 
   final _AppleMapState _appleMapState;
 
+  /// Assemble a list of [lat, lng] of all the annotation whose ids are in the list
+  List<List> _buildLatLngList({
+    required Map<AnnotationId, Annotation> annotationMap,
+    required List<Object?> annotationIds,
+  }) {
+    List<List> latLngList = [];
+    for (final annotationIdString in annotationIds) {
+      final annotation =
+          annotationMap[AnnotationId(annotationIdString as String)];
+
+      if (annotation != null) {
+        latLngList.add(
+          [
+            annotation.position.latitude,
+            annotation.position.longitude,
+          ],
+        );
+      }
+    }
+
+    return latLngList;
+  }
+
+  /// Build a list of two [lat, lng] representing the bounds of all [lat, lng] pass to this function
+  static List<List> _buildLatLngBoundsList(List<List> list) {
+    assert(list.isNotEmpty);
+
+    final firstLatLng = list.first;
+    double s = firstLatLng[0];
+    double n = firstLatLng[0];
+    double w = firstLatLng[1];
+    double e = firstLatLng[1];
+
+    for (var i = 1; i < list.length; i++) {
+      var latlng = list[i];
+      s = min(s, latlng[0]);
+      n = max(n, latlng[0]);
+      w = min(w, latlng[1]);
+      e = max(e, latlng[1]);
+    }
+
+    return [
+      [s, w],
+      [n, e]
+    ];
+  }
+
   Future<dynamic> _handleMethodCall(MethodCall call) async {
     switch (call.method) {
       case 'camera#onMoveStarted':
@@ -49,6 +96,23 @@ class AppleMapController {
         break;
       case 'annotation#onTap':
         _appleMapState.onAnnotationTap(call.arguments['annotationId']);
+        break;
+      case 'cluster#onTap':
+        try {
+          final listOfAllLatLng = _buildLatLngList(
+            annotationMap: _appleMapState._annotations,
+            annotationIds: call.arguments['annotationIds'],
+          );
+          final listOfLatLngBounds = _buildLatLngBoundsList(listOfAllLatLng);
+
+          final cluster = Cluster._fromJson({
+            ...call.arguments as Map,
+            'bounds': listOfLatLngBounds,
+          });
+          _appleMapState.onClusterTap(cluster!);
+        } catch (e) {
+          print(e);
+        }
         break;
       case 'polyline#onTap':
         _appleMapState.onPolylineTap(call.arguments['polylineId']);

@@ -40,6 +40,7 @@ class AppleMap extends StatefulWidget {
     this.onCameraMove,
     this.onCameraIdle,
     this.onTap,
+    this.onClusterTap,
     this.onLongPress,
     this.snapshotOptions,
   }) : super(key: key);
@@ -113,6 +114,9 @@ class AppleMap extends StatefulWidget {
 
   /// Called every time a [AppleMap] is tapped.
   final ArgumentCallback<LatLng>? onTap;
+
+  /// Called every time a [Cluster] is tapped.
+  final ArgumentCallback<Cluster>? onClusterTap;
 
   /// Called every time a [AppleMap] is long pressed.
   final ArgumentCallback<LatLng>? onLongPress;
@@ -311,6 +315,10 @@ class _AppleMapState extends State<AppleMap> {
 
   void onTap(LatLng position) {
     widget.onTap?.call(position);
+  }
+
+  void onClusterTap(Cluster cluster) {
+    widget.onClusterTap?.call(cluster);
   }
 
   void onLongPress(LatLng position) {

@@ -11,6 +11,9 @@ import MapKit
 extension AppleMapController: AnnotationDelegate {
 
     public func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView)  {
+        if let clusterAnnotation = view.annotation as? MKClusterAnnotation {
+            self.onAnnotationClick(annotation: clusterAnnotation)
+        }
         if let annotation: FlutterAnnotation = view.annotation as? FlutterAnnotation  {
             self.currentlySelectedAnnotation = annotation.id
             if !annotation.selectedProgrammatically {
@@ -117,7 +120,35 @@ extension AppleMapController: AnnotationDelegate {
     }
 
     func onAnnotationClick(annotation: MKAnnotation) {
+        if let clusterAnnotation = annotation as? MKClusterAnnotation {
+            // Handle tap of a cluster annotation
+            var annotationIds: [String] = []
+            var clusteringIdentifier: String?
+            
+            for memberAnnotation in clusterAnnotation.memberAnnotations {
+                if let flutterAnnotation: FlutterAnnotation = memberAnnotation as? FlutterAnnotation {
+                    if clusteringIdentifier == nil {
+                        clusteringIdentifier = flutterAnnotation.clusteringIdentifier
+                    }
+
+                    annotationIds.append(flutterAnnotation.id!)
+                }
+            }
+
+            channel.invokeMethod("cluster#onTap", arguments: [
+                "title" : clusterAnnotation.title as Any,
+                "subtitle" : clusterAnnotation.subtitle as Any,
+                "position": [
+                    annotation.coordinate.latitude,
+                    annotation.coordinate.longitude,
+                ],
+                "annotationIds": annotationIds,
+                "clusteringIdentifier": clusteringIdentifier as Any,
+            ])
+        }
+
         if let flutterAnnotation: FlutterAnnotation = annotation as? FlutterAnnotation {
+            // Handle tap of a regular annotation
             flutterAnnotation.wasDragged = true
             channel.invokeMethod("annotation#onTap", arguments: ["annotationId" : flutterAnnotation.id])
         }

@@ -5,6 +5,7 @@
 library apple_maps_flutter;
 
 import 'dart:async';
+import 'dart:math';
 import 'dart:typed_data';
 import 'dart:ui';
 
@@ -23,6 +24,7 @@ part 'src/callbacks.dart';
 part 'src/camera.dart';
 part 'src/circle.dart';
 part 'src/circle_updates.dart';
+part 'src/cluster.dart';
 part 'src/controller.dart';
 part 'src/joint_type.dart';
 part 'src/location.dart';

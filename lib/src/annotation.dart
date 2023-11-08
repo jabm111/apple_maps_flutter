@@ -260,6 +260,15 @@ class Annotation {
     return json;
   }
 
+  static Annotation? _fromJson(dynamic json) {
+    if (json == null) {
+      return null;
+    }
+    return Annotation(
+      annotationId: json['annotationId'],
+    );
+  }
+
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
